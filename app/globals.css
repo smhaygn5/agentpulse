@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/*
+  AgentPulse design tokens — extracted from the product screenshots.
+  Dark-first "terminal-meets-fintech" aesthetic. Light values are kept
+  minimal because the product ships dark by default.
+*/
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #0f0f17;
+  --surface: #14141c;
+  --surface-2: #1a1a24;
+  --border: #232330;
+  --border-strong: #2e2e3d;
+
+  --text: #f5f5fa;
+  --muted: #8b8b9a;
+  --muted-strong: #a8a8b8;
+
+  --primary: #7c5cff;
+  --primary-strong: #6b4bf0;
+  --primary-soft: #2a2350;
+
+  --success: #34e3b0;
+  --success-soft: #123d33;
+  --warning: #f5a623;
+  --warning-soft: #3d2f12;
+  --danger: #ff5c5c;
+  --danger-soft: #3d1c1f;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-muted-strong: var(--muted-strong);
+
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+
+  /* keep next/font defaults working */
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --radius-card: 0.875rem;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  /* App-like: plain text shouldn't show the editable I-beam cursor. */
+  cursor: default;
+}
+
+/* Restore the right cursor on genuinely interactive elements. */
+button:not(:disabled),
+a,
+[role="button"],
+summary,
+label[for] {
+  cursor: pointer;
+}
+input,
+textarea,
+[contenteditable="true"] {
+  cursor: text;
+}
+
+/* Monospace eyebrow / label helper used across cards & nav */
+.eyebrow {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.6875rem;
+  color: var(--muted);
+}
+
+/* Thin scrollbars to match the dark UI */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 9999px;
+}
