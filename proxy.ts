@@ -3,27 +3,31 @@ import { NextResponse, type NextRequest } from "next/server";
 /**
  * Content-Security-Policy.
  *
- * Production: strict, nonce-based with 'strict-dynamic' (no eval, no inline).
- * Development: relaxed — Next.js dev/HMR and React Fast Refresh require
- * 'unsafe-eval' and inline scripts, and the dev server talks over websockets.
- * Locking those down in dev breaks the client bundle (the "eval() is not
- * supported" error), which is why interactive UI (e.g. the wallet button)
- * stops updating. Static security headers live in next.config.ts.
+ * Trade-off note: a nonce + 'strict-dynamic' policy only works when every page
+ * is dynamically rendered, because a per-request nonce can't be injected into
+ * statically prerendered (SSG/ISR) HTML. This app is mostly static for
+ * performance, so we use `script-src 'self' 'unsafe-inline'` in production
+ * instead. That still blocks cross-origin script injection and, combined with
+ * `object-src 'none'`, `base-uri 'self'` and `frame-ancestors 'none'`, gives a
+ * solid policy. We have no HTML-injection sinks (no dangerouslySetInnerHTML),
+ * so the residual inline-script risk is low. (Revisit with force-dynamic +
+ * nonce if a stricter policy is ever required.)
+ *
+ * Dev additionally needs 'unsafe-eval' and ws: for HMR / React Fast Refresh.
+ * Static security headers (HSTS, X-Frame-Options, …) live in next.config.ts.
  */
-export function proxy(request: NextRequest) {
+export function proxy(_request: NextRequest) {
   const isDev = process.env.NODE_ENV !== "production";
-  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 
   const directives = [
     `default-src 'self'`,
     isDev
       ? `script-src 'self' 'unsafe-eval' 'unsafe-inline'`
-      : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+      : `script-src 'self' 'unsafe-inline'`,
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: blob: https:`,
     `font-src 'self' data:`,
     // 'self' for our API; Arc testnet RPC for wallet/chain reads (viem).
-    // Dev also needs ws: for HMR.
     isDev
       ? `connect-src 'self' https://rpc.testnet.arc.network ws:`
       : `connect-src 'self' https://rpc.testnet.arc.network`,
@@ -32,16 +36,10 @@ export function proxy(request: NextRequest) {
     `form-action 'self'`,
     `frame-ancestors 'none'`,
   ];
-  // upgrade-insecure-requests would force ws:// -> wss:// and break local HMR.
   if (!isDev) directives.push(`upgrade-insecure-requests`);
 
-  const csp = directives.join("; ");
-
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-nonce", nonce);
-
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
-  response.headers.set("Content-Security-Policy", csp);
+  const response = NextResponse.next();
+  response.headers.set("Content-Security-Policy", directives.join("; "));
   return response;
 }
 
