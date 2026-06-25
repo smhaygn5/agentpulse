@@ -55,6 +55,9 @@ export default function LeaderboardPage() {
           Real-time trust scores and performance metrics for the autonomous agent
           economy. Validated by ARC consensus.
         </p>
+        <Badge tone="neutral" className="mt-3">
+          Sample data — real on-chain ranking lands in v2
+        </Badge>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

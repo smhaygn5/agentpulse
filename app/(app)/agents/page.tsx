@@ -2,13 +2,14 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, Star } from "lucide-react";
 import { AGENTS } from "@/lib/mock/agents";
 import { tierFor, riskTone } from "@/lib/reputation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AgentAvatar } from "@/components/agents/agent-avatar";
 import { Sparkline } from "@/components/charts/sparkline";
+import { useWatchlist } from "@/lib/hooks/use-watchlist";
 import { cn } from "@/lib/utils";
 
 const TONE_TEXT: Record<string, string> = {
@@ -20,6 +21,7 @@ const TONE_TEXT: Record<string, string> = {
 
 export default function AgentsPage() {
   const [query, setQuery] = useState("");
+  const { has, toggle } = useWatchlist();
   const agents = useMemo(() => {
     const q = query.trim().toLowerCase();
     return AGENTS.filter(
@@ -67,7 +69,25 @@ export default function AgentsPage() {
                       </p>
                     </div>
                   </div>
-                  <Badge tone={riskTone(a.riskLevel)}>{a.riskLevel}</Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge tone={riskTone(a.riskLevel)}>{a.riskLevel}</Badge>
+                    <button
+                      aria-label={has(a.id) ? "Remove from watchlist" : "Add to watchlist"}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggle(a.id);
+                      }}
+                      className="rounded-md p-1 text-muted hover:text-warning"
+                    >
+                      <Star
+                        className={cn(
+                          "h-4 w-4",
+                          has(a.id) && "fill-warning text-warning",
+                        )}
+                      />
+                    </button>
+                  </div>
                 </div>
                 <div className="mt-4 flex items-end justify-between">
                   <div>

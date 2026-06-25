@@ -1,17 +1,27 @@
 import Link from "next/link";
 
-const COLUMNS = [
+const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Resources",
-    links: ["Documentation", "API Reference", "Status"],
+    links: [
+      { label: "Documentation", href: "https://docs.arc.network" },
+      { label: "Arc Network", href: "https://www.arc.io" },
+      { label: "Faucet", href: "https://faucet.circle.com" },
+    ],
   },
   {
     title: "Legal",
-    links: ["Privacy Policy", "Terms of Service"],
+    links: [
+      { label: "Privacy Policy", href: "#" },
+      { label: "Terms of Service", href: "#" },
+    ],
   },
   {
     title: "Ecosystem",
-    links: ["ARC Protocol", "Foundation"],
+    links: [
+      { label: "ArcScan Explorer", href: "https://testnet.arcscan.app" },
+      { label: "Circle", href: "https://www.circle.com" },
+    ],
   },
 ];
 
@@ -31,9 +41,14 @@ export function Footer() {
               <p className="eyebrow text-success">{col.title}</p>
               <ul className="mt-3 space-y-2">
                 {col.links.map((link) => (
-                  <li key={link}>
-                    <Link href="#" className="text-sm text-muted hover:text-text">
-                      {link}
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      target={link.href.startsWith("http") ? "_blank" : undefined}
+                      rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      className="text-sm text-muted hover:text-text"
+                    >
+                      {link.label}
                     </Link>
                   </li>
                 ))}

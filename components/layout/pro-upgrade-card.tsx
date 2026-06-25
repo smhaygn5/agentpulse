@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 /** The "Upgrade to Pro" card pinned near the bottom of the sidebar. */
@@ -8,8 +9,8 @@ export function ProUpgradeCard() {
       <p className="mt-2 text-sm text-muted-strong">
         Unlock real-time wallet tracking and API access.
       </p>
-      <Button className="mt-3 w-full" size="sm">
-        Upgrade to Pro
+      <Button asChild className="mt-3 w-full" size="sm">
+        <Link href="/settings">Upgrade to Pro</Link>
       </Button>
     </div>
   );

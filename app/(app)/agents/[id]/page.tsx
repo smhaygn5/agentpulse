@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Clock, ShieldCheck, Share2, TrendingUp } from "lucide-react";
+import { Clock, ShieldCheck, TrendingUp } from "lucide-react";
 import { AGENTS, getAgent } from "@/lib/mock/agents";
 import { tierFor, type ScoreDimension } from "@/lib/reputation";
 import { shortenAddress } from "@/lib/utils";
 import { arcScanUrl } from "@/lib/chain";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { AgentAvatar } from "@/components/agents/agent-avatar";
 import { TrustScoreRing } from "@/components/charts/trust-score-ring";
 import { MiniBarChart } from "@/components/charts/mini-bar-chart";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { AgentActions } from "@/components/agents/agent-actions";
 import { OverviewTab } from "@/components/agents/tabs/overview-tab";
 import { DeveloperTab } from "@/components/agents/tabs/developer-tab";
 import { CommunityTab } from "@/components/agents/tabs/community-tab";
@@ -84,12 +84,7 @@ export default async function AgentDetailPage({
             </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="secondary" size="sm">
-            <Share2 className="h-4 w-4" /> Share
-          </Button>
-          <Button size="sm">Monitor Agent</Button>
-        </div>
+        <AgentActions id={agent.id} name={agent.name} />
       </div>
 
       {/* Score panel */}

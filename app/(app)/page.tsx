@@ -21,10 +21,13 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">
           Pulse Dashboard
         </h1>
+        <Badge tone="neutral" title="Listed agents are sample data; the Live GitHub Scan below uses real data.">
+          Sample data · live scan is real
+        </Badge>
       </div>
 
       {/* KPI row */}
