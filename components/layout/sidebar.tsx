@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, HelpCircle, LifeBuoy } from "lucide-react";
+import { HelpCircle, LifeBuoy } from "lucide-react";
 import { NAV_ITEMS, isActivePath } from "@/lib/nav";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/brand/logo";
 import { ProUpgradeCard } from "./pro-upgrade-card";
 
 /** Desktop left navigation rail (hidden on mobile, see MobileTabBar). */
@@ -14,9 +15,7 @@ export function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-border bg-bg-elevated lg:flex">
       <div className="flex items-center gap-2.5 px-6 py-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15 text-primary">
-          <Activity className="h-5 w-5" />
-        </div>
+        <Logo size={34} className="rounded-lg" />
         <div className="leading-tight">
           <p className="text-lg font-bold tracking-tight">AgentPulse</p>
           <p className="eyebrow">ARC Ecosystem</p>

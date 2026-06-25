@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { Activity } from "lucide-react";
+import { Logo } from "@/components/brand/logo";
 import { ConnectWallet } from "@/components/wallet/connect-wallet";
 
 /**
@@ -11,9 +11,7 @@ export function Topbar() {
     <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-bg/80 px-4 py-3 backdrop-blur lg:px-8">
       {/* Brand shown only on mobile (sidebar carries it on desktop) */}
       <div className="flex items-center gap-2 lg:hidden">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
-          <Activity className="h-4 w-4" />
-        </div>
+        <Logo size={30} className="rounded-lg" />
         <span className="text-base font-bold">AgentPulse</span>
       </div>
 
