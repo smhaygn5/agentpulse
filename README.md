@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AgentPulse
 
-## Getting Started
+**AI Agent Reputation Scanner for the Circle Arc ecosystem.** Enter an agent
+name, token address, or GitHub repo and get a unified **Trust Score (0–100)**
+aggregated from developer activity, on-chain behavior, community signals, and
+security indicators — with an explainable report.
 
-First, run the development server:
+> Target chain: **Circle Arc** (EVM L1, currently testnet; gas paid in USDC).
+> Wallet: MetaMask. See [ROADMAP.md](ROADMAP.md) for what's next.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+Next.js 16 (App Router, RSC) · TypeScript · Tailwind CSS v4 · wagmi v3 / viem ·
+SIWE auth · Vitest + Playwright.
+
+## Trust Score
+
+```
+Trust = 0.40·Developer + 0.30·Onchain + 0.20·Community + 0.10·Security
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Deterministic and versioned — see [lib/scoring/engine.ts](lib/scoring/engine.ts).
+Tiers: 0–20 Critical · 21–40 Weak · 41–60 Developing · 61–80 Strong · 81–100 Trusted.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Local development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+cp .env.example .env.local   # fill in secrets (see below)
+npm run dev                  # http://localhost:3000
+```
 
-## Learn More
+### Environment (`.env.local`, git-ignored)
 
-To learn more about Next.js, take a look at the following resources:
+| Var | Required | Purpose |
+| --- | --- | --- |
+| `SESSION_SECRET` | prod | HMAC secret for SIWE session cookies (`openssl rand -base64 32`) |
+| `GITHUB_TOKEN` | optional | Enables live GitHub scans (read-only public repo scope) |
+| `NEXT_PUBLIC_APP_NAME` | optional | Display name (defaults to "AgentPulse") |
+| `ARCSCAN_API_KEY`, `ARC_RPC_API_KEY`, `ANTHROPIC_API_KEY`, `UPSTASH_*`, `DATABASE_URL` | later | Faz-2 data/AI/persistence |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run dev        # dev server
+npm run build      # production build
+npm run test       # vitest unit tests
+npm run e2e        # playwright e2e (needs: npx playwright install chromium)
+npm run typecheck  # tsc --noEmit
+npm run lint       # eslint
+```
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+See [DEPLOY.md](DEPLOY.md) (Vercel).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Security
+
+Strict CSP (nonce in prod), HSTS, X-Frame-Options, zod input validation,
+per-IP rate limiting, SSRF-locked GitHub adapter, server-only secrets, SIWE
+with nonce/domain/chain/expiry checks and HMAC session cookies.
