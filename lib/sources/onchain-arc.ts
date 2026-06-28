@@ -45,7 +45,40 @@ export interface ArcOnchain {
   totalSupply: string | null; // human-readable
   owner: string | null;
   ownershipRenounced: boolean | null;
+  // Enriched from the ArcScan (Blockscout) free API:
+  holders: number | null;
+  transfers: number | null;
+  reputation: string | null;
   explorerUrl: string;
+}
+
+const BLOCKSCOUT = `${ARC_TESTNET.explorerUrl}/api/v2`;
+
+/** Holder/transfer counts + reputation from ArcScan's Blockscout API (no key). */
+async function fetchBlockscout(address: string): Promise<{
+  holders: number | null;
+  transfers: number | null;
+  reputation: string | null;
+}> {
+  const num = (v: unknown): number | null => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+  try {
+    const [tokenRes, countersRes] = await Promise.all([
+      fetch(`${BLOCKSCOUT}/tokens/${address}`, { next: { revalidate: 120 } }),
+      fetch(`${BLOCKSCOUT}/tokens/${address}/counters`, { next: { revalidate: 120 } }),
+    ]);
+    const token = tokenRes.ok ? await tokenRes.json() : {};
+    const counters = countersRes.ok ? await countersRes.json() : {};
+    return {
+      holders: num(counters.token_holders_count ?? token.holders_count),
+      transfers: num(counters.transfers_count),
+      reputation: typeof token.reputation === "string" ? token.reputation : null,
+    };
+  } catch {
+    return { holders: null, transfers: null, reputation: null };
+  }
 }
 
 async function read<T>(fn: () => Promise<T>): Promise<T | null> {
@@ -73,15 +106,19 @@ export async function fetchArcOnchain(addressInput: string): Promise<ArcOnchain>
       totalSupply: null,
       owner: null,
       ownershipRenounced: null,
+      holders: null,
+      transfers: null,
+      reputation: null,
     };
   }
 
-  const [name, symbol, decimals, supplyRaw, owner] = await Promise.all([
+  const [name, symbol, decimals, supplyRaw, owner, blockscout] = await Promise.all([
     read(() => client.readContract({ address, abi: ERC20_ABI, functionName: "name" })),
     read(() => client.readContract({ address, abi: ERC20_ABI, functionName: "symbol" })),
     read(() => client.readContract({ address, abi: ERC20_ABI, functionName: "decimals" })),
     read(() => client.readContract({ address, abi: ERC20_ABI, functionName: "totalSupply" })),
     read(() => client.readContract({ address, abi: ERC20_ABI, functionName: "owner" })),
+    fetchBlockscout(address),
   ]);
 
   const dec = typeof decimals === "number" ? decimals : null;
@@ -100,5 +137,8 @@ export async function fetchArcOnchain(addressInput: string): Promise<ArcOnchain>
     totalSupply,
     owner: ownerAddr,
     ownershipRenounced: ownerAddr ? ownerAddr.toLowerCase() === ZERO : null,
+    holders: blockscout.holders,
+    transfers: blockscout.transfers,
+    reputation: blockscout.reputation,
   };
 }

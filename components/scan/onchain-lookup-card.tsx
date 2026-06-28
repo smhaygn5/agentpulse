@@ -15,7 +15,15 @@ interface OnchainResult {
   totalSupply: string | null;
   owner: string | null;
   ownershipRenounced: boolean | null;
+  holders: number | null;
+  transfers: number | null;
+  reputation: string | null;
   explorerUrl: string;
+}
+
+function fmtCount(n: number | null): string {
+  if (n == null) return "—";
+  return n.toLocaleString("en-US");
 }
 
 function fmtSupply(s: string | null): string {
@@ -92,12 +100,17 @@ export function OnchainLookupCard() {
             {result.ownershipRenounced === false && (
               <Badge tone="warning">Owned</Badge>
             )}
+            {result.reputation && result.reputation !== "ok" && (
+              <Badge tone="danger">Flagged: {result.reputation}</Badge>
+            )}
           </div>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
             <Row label="Name" value={result.name ?? "—"} />
             <Row label="Symbol" value={result.symbol ?? "—"} />
             <Row label="Decimals" value={result.decimals?.toString() ?? "—"} />
             <Row label="Total Supply" value={fmtSupply(result.totalSupply)} />
+            <Row label="Holders" value={fmtCount(result.holders)} />
+            <Row label="Transfers" value={fmtCount(result.transfers)} />
             <Row
               label="Owner"
               value={
@@ -106,7 +119,6 @@ export function OnchainLookupCard() {
                   : "—"
               }
             />
-            <Row label="Holders" value="N/A (needs indexer)" muted />
           </dl>
           <a
             href={result.explorerUrl}
