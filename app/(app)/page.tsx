@@ -10,6 +10,7 @@ import { MetricCard } from "@/components/ui/metric-card";
 import { MiniBarChart } from "@/components/charts/mini-bar-chart";
 import { AgentAvatar } from "@/components/agents/agent-avatar";
 import { LiveScanCard } from "@/components/scan/live-scan-card";
+import { OnchainLookupCard } from "@/components/scan/onchain-lookup-card";
 
 export default function DashboardPage() {
   const total = 12402;
@@ -58,7 +59,10 @@ export default function DashboardPage() {
         />
       </div>
 
-      <LiveScanCard />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <LiveScanCard />
+        <OnchainLookupCard />
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Trending Reputation table */}
